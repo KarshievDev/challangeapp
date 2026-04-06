@@ -1,0 +1,11 @@
+app_identifier("com.levelup.challenge")
+
+metadata_path("./metadata")
+
+# App Store Connect metadata placeholders
+# name({ "en-US" => "LevelUp Challenge" })
+# description({ "en-US" => "Gamify your growth with LevelUp Challenge. Join 7, 21, or 30-day challenges, upload proof, and climb the leaderboard." })
+# keywords({ "en-US" => "habits, gamification, fitness, productivity, challenges, goals" })
+# categories(["Health & Fitness", "Social Networking"])
+# privacy_url("https://levelupchallenge.com/privacy")
+# support_url("https://levelupchallenge.com/support")
