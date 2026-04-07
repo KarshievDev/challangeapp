@@ -5,36 +5,45 @@ platform :ios, '15.0'
 # For more information, see https://guides.cocoapods.org/using/analytics.html
 install! 'cocoapods', :deterministic_uuids => false
 
-# Load the generated pod helper which contains common Flutter logic
-# This file is created automatically during 'flutter pub get' or 'flutter build ios'
-generated_pod_helper_path = File.join(File.dirname(__FILE__), 'Flutter', 'generated_pod_helper.rb')
-if File.exist?(generated_pod_helper_path)
-  load generated_pod_helper_path
-else
-  # On CI, flutter pub get might not have created this yet if called from pod install directly.
-  # However, flutter build ios should have created it.
+# Robust logic to find the FLUTTER_ROOT, supporting both local and CI environments
+def flutter_root
+  # 1. First check for FLUTTER_ROOT in environment (standard for CI like flutter-action)
+  return ENV['FLUTTER_ROOT'] if ENV['FLUTTER_ROOT']
+
+  # 2. Fallback to hunting in Generated.xcconfig for local development
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  if File.exist?(generated_xcode_build_settings_path)
+    File.foreach(generated_xcode_build_settings_path) do |line|
+      matches = line.match(/FLUTTER_ROOT=(.*)/)
+      return matches[1].strip if matches
+    end
+  end
+  
+  # 3. Last resort check for Windows local source (where user seems to be working)
+  return 'C:/src/flutter' if File.exist?('C:/src/flutter')
+  
+  raise "FLUTTER_ROOT not found in environment or Generated.xcconfig. Try running 'flutter pub get'."
 end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  # flutter_install_all_ios_pods is defined in generated_pod_helper.rb
-  if defined?(flutter_install_all_ios_pods)
-    flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  end
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
-    # flutter_additional_ios_build_settings is also in generated_pod_helper.rb
-    if defined?(flutter_additional_ios_build_settings)
-      flutter_additional_ios_build_settings(target)
-    end
+    flutter_additional_ios_build_settings(target)
     
-    # Force all targets to iOS 15.0 to suppress deployment target warnings and fix Xcode 16 build errors
     target.build_configurations.each do |config|
+      # Force all targets to iOS 15.0 to suppress deployment target warnings and fix Xcode 16 build errors
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      
+      # Fix 'Module not found' issues in GeneratedPluginRegistrant and other non-modular includes
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
     end
   end
 end
