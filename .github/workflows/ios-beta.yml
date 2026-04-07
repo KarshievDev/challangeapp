@@ -45,7 +45,12 @@ jobs:
           flutter pub get
 
       - name: Build IPA
-        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+        env:
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+        run: |
+          sed -i '' "s/XXXXXXXXXX/$TEAM_ID/g" ios/ExportOptions.plist
+          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+          cp build/ios/ipa/*.ipa ios/Runner.ipa
 
       - name: Upload to TestFlight using Fastlane
         run: cd ios && bundle exec fastlane beta
