@@ -27,23 +27,35 @@ void main() async {
   runApp(const LevelUpApp());
 }
 
-class LevelUpApp extends StatelessWidget {
+class LevelUpApp extends StatefulWidget {
   const LevelUpApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final mockAuth = MockAuthRepository()..init();
-    final mockChallenge = MockChallengeRepository();
+  State<LevelUpApp> createState() => _LevelUpAppState();
+}
 
+class _LevelUpAppState extends State<LevelUpApp> {
+  late final AuthRepository _mockAuth;
+  late final ChallengeRepository _mockChallenge;
+
+  @override
+  void initState() {
+    super.initState();
+    _mockAuth = MockAuthRepository()..init();
+    _mockChallenge = MockChallengeRepository();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<AuthRepository>(create: (_) => mockAuth),
-        RepositoryProvider<ChallengeRepository>(create: (_) => mockChallenge),
+        RepositoryProvider<AuthRepository>(create: (_) => _mockAuth),
+        RepositoryProvider<ChallengeRepository>(create: (_) => _mockChallenge),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AuthBloc>(
-            create: (context) => AuthBloc(authRepository: mockAuth)..add(AuthStarted()),
+            create: (context) => AuthBloc(authRepository: _mockAuth)..add(AuthStarted()),
           ),
           BlocProvider<LanguageBloc>(create: (context) => LanguageBloc()),
         ],

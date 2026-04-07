@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/colors.dart';
+import '../../../core/theme/colors.dart';
 
 class LeaderboardPage extends StatelessWidget {
   const LeaderboardPage({super.key});

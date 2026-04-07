@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../core/theme/colors.dart';
+import 'dart:io';
+import '../../../core/theme/colors.dart';
 
 class ChallengeDetailPage extends StatefulWidget {
   final String title;
@@ -101,7 +102,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                         Text('Tap to select', style: TextStyle(color: AppColors.textCaption)),
                       ],
                     )
-                  : ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.network(_image!.path, fit: BoxFit.cover, errorBuilder: (c, e, s) => Center(child: Text("Image selected")))),
+                  : ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.file(File(_image!.path), fit: BoxFit.cover, errorBuilder: (c, e, s) => Center(child: Text("Image selected")))),
             ),
           ),
           const SizedBox(height: 24),
