@@ -3,10 +3,16 @@ default_platform(:ios)
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
-    # 1. Upload to TestFlight
-    # The IPA is already built by flutter build ipa in the GitHub Actions workflow
+    # Build the app using gym (build_app)
+    build_app(
+      scheme: "Runner",
+      workspace: "Runner.xcworkspace",
+      export_method: "app-store",
+      export_options: "./ExportOptions.plist"
+    )
+    
+    # Upload to TestFlight
     upload_to_testflight(
-      ipa: "Runner.ipa", # We'll copy it here in the workflow
       skip_waiting_for_build_processing: true
     )
   end

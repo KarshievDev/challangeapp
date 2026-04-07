@@ -44,19 +44,15 @@ jobs:
           flutter clean
           flutter pub get
 
-      - name: Build IPA
+      - name: Build and Upload using Fastlane
         env:
           TEAM_ID: ${{ secrets.TEAM_ID }}
-        run: |
-          sed -i '' "s/XXXXXXXXXX/$TEAM_ID/g" ios/ExportOptions.plist
-          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-          cp build/ios/ipa/*.ipa ios/Runner.ipa
-
-      - name: Upload to TestFlight using Fastlane
-        run: cd ios && bundle exec fastlane beta
-        env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           FASTLANE_ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
           FASTLANE_TEAM_ID: ${{ secrets.TEAM_ID }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: |
+          sed -i '' "s/XXXXXXXXXX/$TEAM_ID/g" ios/ExportOptions.plist
+          flutter build ios --release --no-codesign
+          cd ios && bundle exec fastlane beta
+
