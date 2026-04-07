@@ -8,8 +8,7 @@ platform :ios do
       scheme: "Runner",
       workspace: "Runner.xcworkspace",
       export_method: "app-store",
-      export_options: "./ExportOptions.plist",
-      xcargs: "PROVISIONING_PROFILE_SPECIFIER='LevelUp_AppStore_Profile' DEVELOPMENT_TEAM='36XKC8ZTS6' CODE_SIGN_STYLE='Manual' CODE_SIGN_IDENTITY='Apple Distribution'"
+      export_options: "./ExportOptions.plist"
     )
     
     # Upload to TestFlight
